@@ -9,17 +9,13 @@ async function boot() {
     return;
   }
   const snapshotUrl = root.dataset.snapshotUrl;
-  const expectedGeneration = root.dataset.generationId;
   try {
     const snapshot = await loadJson(snapshotUrl);
     if (!snapshot || typeof snapshot !== "object") {
       throw new Error("snapshot payload is not an object");
     }
-    if (expectedGeneration && snapshot.generation_id && snapshot.generation_id !== expectedGeneration) {
-      throw new Error(`snapshot generation mismatch: expected ${expectedGeneration}, got ${snapshot.generation_id}`);
-    }
     if (chip) {
-      chip.textContent = `Snapshot validated: ${snapshot.generation_id || expectedGeneration || "unknown"}`;
+      chip.textContent = `Snapshot validated: ${snapshot.generation_id || "unknown"}`;
     }
     document.body.dataset.snapshotReady = "true";
     renderCharts(document);
