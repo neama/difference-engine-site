@@ -1,0 +1,863 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WATER Fish Pair Accumulation</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --bg2: #101a33;
+      --panel: rgba(16, 26, 51, 0.82);
+      --panel-border: rgba(132, 153, 190, 0.22);
+      --text: #edf2ff;
+      --muted: #9aa9c5;
+      --accent: #69d6ff;
+      --accent-2: #8ce99a;
+      --active: #42d392;
+      --weakening: #f6c36a;
+      --broken: #ff7b72;
+      --finished: #91a7ff;
+      --candidate: #8b95a7;
+      --ready: #54d2ff;
+      --pass: #42d392;
+      --fail: #ff7b72;
+      --degraded: #f6c36a;
+      --unknown: #8b95a7;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(69, 112, 255, 0.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(72, 216, 160, 0.12), transparent 22%),
+        linear-gradient(180deg, var(--bg), #060912 76%);
+      color: var(--text);
+      font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+      line-height: 1.45;
+    }
+    .wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    .hero {
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(25, 41, 80, 0.9), rgba(10, 16, 34, 0.92));
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -40% auto;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108, 214, 255, 0.18), transparent 68%);
+      pointer-events: none;
+    }
+    .title {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 54px);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      max-width: 1100px;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .action-button {
+      appearance: none;
+      border: 1px solid rgba(84, 210, 255, 0.4);
+      background: linear-gradient(135deg, rgba(84, 210, 255, 0.18), rgba(84, 210, 255, 0.08));
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .action-button:hover {
+      border-color: rgba(84, 210, 255, 0.7);
+      background: linear-gradient(135deg, rgba(84, 210, 255, 0.28), rgba(84, 210, 255, 0.12));
+    }
+    .action-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(132, 153, 190, 0.22);
+      border-radius: 999px;
+      padding: 9px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .action-toggle input {
+      accent-color: var(--accent);
+    }
+    .meta-pill {
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .section {
+      margin-top: 26px;
+    }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0;
+    }
+    .section-sub, .pair-card-sub, .status-note, .muted {
+      color: var(--muted);
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .status-card, .panel, .pair-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .status-card {
+      padding: 16px 18px;
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .status-label {
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .status-value {
+      font-size: 20px;
+      font-weight: 800;
+      margin-top: 8px;
+      word-break: break-word;
+    }
+    .status-note {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      background: rgba(10, 15, 29, 0.7);
+      box-shadow: var(--shadow);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1180px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(132, 153, 190, 0.16);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(13, 20, 40, 0.96);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .mono {
+      font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-active { background: rgba(66, 211, 146, 0.16); color: var(--active); border-color: rgba(66, 211, 146, 0.34); }
+    .badge-weakening { background: rgba(246, 195, 106, 0.16); color: var(--weakening); border-color: rgba(246, 195, 106, 0.34); }
+    .badge-broken { background: rgba(255, 123, 114, 0.16); color: var(--broken); border-color: rgba(255, 123, 114, 0.34); }
+    .badge-finished { background: rgba(145, 167, 255, 0.16); color: var(--finished); border-color: rgba(145, 167, 255, 0.34); }
+    .badge-ready_for_follow { background: rgba(84, 210, 255, 0.16); color: var(--ready); border-color: rgba(84, 210, 255, 0.34); }
+    .badge-candidate_only { background: rgba(139, 149, 167, 0.14); color: var(--candidate); border-color: rgba(139, 149, 167, 0.3); }
+    .badge-unknown { background: rgba(139, 149, 167, 0.14); color: var(--unknown); border-color: rgba(139, 149, 167, 0.3); }
+    .badge-pass { background: rgba(66, 211, 146, 0.16); color: var(--pass); border-color: rgba(66, 211, 146, 0.34); }
+    .badge-fail { background: rgba(255, 123, 114, 0.16); color: var(--fail); border-color: rgba(255, 123, 114, 0.34); }
+    .badge-degraded { background: rgba(246, 195, 106, 0.16); color: var(--degraded); border-color: rgba(246, 195, 106, 0.34); }
+    .badge-missing { background: rgba(139, 149, 167, 0.14); color: var(--unknown); border-color: rgba(139, 149, 167, 0.3); }
+    .pair-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
+    }
+    .fish-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+    }
+    .pair-card {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pair-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+    .pair-card-title {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+    }
+    .pair-card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .pair-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .mini-stat {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(132, 153, 190, 0.16);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .mini-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .mini-value {
+      margin-top: 5px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .mini-hint {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .pair-card-split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      align-items: start;
+    }
+    .section-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 11px;
+    }
+    .pair-paper-note {
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .timeline {
+      display: grid;
+      gap: 6px;
+      padding: 10px 12px;
+      border: 1px solid rgba(132, 153, 190, 0.16);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .timeline-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 12px;
+    }
+    .timeline-key {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .timeline-value {
+      text-align: right;
+      word-break: break-all;
+    }
+    .source-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .handoff-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .handoff-textarea {
+      width: 100%;
+      min-height: 360px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(132, 153, 190, 0.18);
+      background: rgba(5, 9, 20, 0.92);
+      color: var(--text);
+      resize: vertical;
+      white-space: pre;
+      font-family: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .accum-grid, .diag-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .panel {
+      padding: 16px;
+      overflow: hidden;
+    }
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+    .compact-table {
+      min-width: 100%;
+      font-size: 12px;
+    }
+    .compact-table th {
+      position: static;
+      background: transparent;
+    }
+    .compact-table td {
+      padding: 9px 10px;
+    }
+    details.row-details {
+      margin-top: 8px;
+    }
+    details.row-details > summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      list-style: none;
+    }
+    details.row-details > summary::-webkit-details-marker {
+      display: none;
+    }
+    .row-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .detail-chip {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(132, 153, 190, 0.16);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .detail-label {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .detail-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      word-break: break-word;
+    }
+    .detail-sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .pair-name {
+      font-weight: 800;
+      font-size: 15px;
+    }
+    .pair-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .diag-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(132, 153, 190, 0.14);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 800px) {
+      .wrap { padding: 16px 12px 28px; }
+      .hero { padding: 20px; border-radius: 18px; }
+      .pair-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pair-card-split { grid-template-columns: 1fr; }
+      table { min-width: 980px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="hero-top">
+        <div>
+          <h1 class="title">WATER Fish Pair Accumulation</h1>
+          <div class="subtitle">
+            Offline presentation over the current machine surfaces. Current Fish is shown first; legacy contour stays subordinate for comparison and provenance.
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="action-button" type="button" onclick="refreshReport()">Refresh Data</button>
+          <label class="action-toggle"><input id="autoReloadToggle" type="checkbox" onchange="toggleAutoReload(this.checked)" /> Auto reload every 60s</label>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span class="meta-pill mono">Generated: 2026-07-19T18:47:58Z</span>
+        <span class="meta-pill"><span class="badge badge-fail">STALE</span></span>
+        <span class="meta-pill mono">Live follow pairs: 9</span>
+        <span class="meta-pill mono">Visible pairs: 9</span>
+        <span class="meta-pill mono">Paper closed: 0</span>
+        <span class="meta-pill mono">Duplicate stable keys: 28</span>
+        <span class="meta-pill mono">Identity collisions: 0</span>
+      </div>
+    </header>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">CURRENT FISH</div>
+            <div class="section-sub">Fish-first presentation derived only from report_contract.current_water.surface.</div>
+          </div>
+        </div>
+        <div class="fish-grid">
+      <article class="panel">
+        <h3>WATER_CANONICAL_FISH::236d897c48db1d135e57</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Source projections: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::109f89c2648d9657bdc0, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1f7a4274329d8d3bb5f7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::a8f8b6e054a0cdc754aa</div>
+        <div class="diag-item"><span class="detail-label">Current state</span><span class="detail-value mono">MATCH_ELIGIBLE_FOR_FISH</span></div><div class="diag-item"><span class="detail-label">Pair manifestations count</span><span class="detail-value mono">3</span></div><div class="diag-item"><span class="detail-label">Pairs</span><span class="detail-value mono">EURGBP, EURUSD, GBPUSD</span></div><div class="diag-item"><span class="detail-label">Lifecycle summary</span><span class="detail-value mono">birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::6ba0fc95e141628b7322</span></div><div class="diag-item"><span class="detail-label">Movement summary</span><span class="detail-value mono">pair_manifestations=3; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json</span></div><div class="diag-item"><span class="detail-label">Observation status</span><span class="detail-value mono">MATERIALIZED; water_canonical_paper_current.json is present</span></div><div class="diag-item"><span class="detail-label">Degradation flags</span><span class="detail-value mono">B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.</span></div><div class="diag-item"><span class="detail-label">Snapshot/source freshness</span><span class="detail-value mono">snapshot=2026-07-19T18:47:58Z | source=2026-07-19T18:47:54Z | report=2026-07-19T18:47:58Z</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>WATER_CANONICAL_FISH::7c9e3f662babbca25335</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Source projections: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1058462635c541129cc7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::72ff3aacbbd3707de03c, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::84fbf35fd211bd45e172</div>
+        <div class="diag-item"><span class="detail-label">Current state</span><span class="detail-value mono">MATCH_ELIGIBLE_FOR_FISH</span></div><div class="diag-item"><span class="detail-label">Pair manifestations count</span><span class="detail-value mono">3</span></div><div class="diag-item"><span class="detail-label">Pairs</span><span class="detail-value mono">AUDUSD, USDCHF, USDJPY</span></div><div class="diag-item"><span class="detail-label">Lifecycle summary</span><span class="detail-value mono">birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::f1a3a22c5f513a9c83dc</span></div><div class="diag-item"><span class="detail-label">Movement summary</span><span class="detail-value mono">pair_manifestations=3; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json</span></div><div class="diag-item"><span class="detail-label">Observation status</span><span class="detail-value mono">MATERIALIZED; water_canonical_paper_current.json is present</span></div><div class="diag-item"><span class="detail-label">Degradation flags</span><span class="detail-value mono">B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.</span></div><div class="diag-item"><span class="detail-label">Snapshot/source freshness</span><span class="detail-value mono">snapshot=2026-07-19T18:47:58Z | source=2026-07-19T18:47:54Z | report=2026-07-19T18:47:58Z</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>WATER_CANONICAL_FISH::93b396e9a5c7b1b9fc69</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Source projections: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::160876e49b47f85a3815, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::3a2e013aee07aa8ea8c1</div>
+        <div class="diag-item"><span class="detail-label">Current state</span><span class="detail-value mono">MATCH_ELIGIBLE_FOR_FISH</span></div><div class="diag-item"><span class="detail-label">Pair manifestations count</span><span class="detail-value mono">2</span></div><div class="diag-item"><span class="detail-label">Pairs</span><span class="detail-value mono">NZDUSD, USDCAD</span></div><div class="diag-item"><span class="detail-label">Lifecycle summary</span><span class="detail-value mono">birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::f8cf56d4309c70ec676e</span></div><div class="diag-item"><span class="detail-label">Movement summary</span><span class="detail-value mono">pair_manifestations=2; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json</span></div><div class="diag-item"><span class="detail-label">Observation status</span><span class="detail-value mono">MATERIALIZED; water_canonical_paper_current.json is present</span></div><div class="diag-item"><span class="detail-label">Degradation flags</span><span class="detail-value mono">B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.</span></div><div class="diag-item"><span class="detail-label">Snapshot/source freshness</span><span class="detail-value mono">snapshot=2026-07-19T18:47:58Z | source=2026-07-19T18:47:54Z | report=2026-07-19T18:47:58Z</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>WATER_CANONICAL_FISH::a157bc3853b8e6978d75</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Source projections: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::b98f5af33a8d77024d3e, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::f715baf61cc8e7c80efb</div>
+        <div class="diag-item"><span class="detail-label">Current state</span><span class="detail-value mono">MATCH_ELIGIBLE_FOR_FISH</span></div><div class="diag-item"><span class="detail-label">Pair manifestations count</span><span class="detail-value mono">2</span></div><div class="diag-item"><span class="detail-label">Pairs</span><span class="detail-value mono">GBPJPY, USDJPY</span></div><div class="diag-item"><span class="detail-label">Lifecycle summary</span><span class="detail-value mono">birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::4a904df3bf38a9c8a9da</span></div><div class="diag-item"><span class="detail-label">Movement summary</span><span class="detail-value mono">pair_manifestations=2; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json</span></div><div class="diag-item"><span class="detail-label">Observation status</span><span class="detail-value mono">MATERIALIZED; water_canonical_paper_current.json is present</span></div><div class="diag-item"><span class="detail-label">Degradation flags</span><span class="detail-value mono">B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.</span></div><div class="diag-item"><span class="detail-label">Snapshot/source freshness</span><span class="detail-value mono">snapshot=2026-07-19T18:47:58Z | source=2026-07-19T18:47:54Z | report=2026-07-19T18:47:58Z</span></div>
+      </article>
+    </div>
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">FISH HISTORY</div>
+            <div class="section-sub">History stays explicit even when the source surfaces are absent.</div>
+          </div>
+        </div>
+
+      <article class="panel">
+        <h3>History Availability</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Do not synthesize Fish history from current Projection, Movement, or PAPER rows.</div>
+        <div class="diag-item"><span class="detail-label">Fish history status</span><span class="detail-value mono">SOURCE_SURFACES_MISSING</span></div><div class="diag-item"><span class="detail-label">Missing surfaces</span><span class="detail-value mono">water_fish_history_current.json, fish_lifecycle_ledger_current.json, fish_event_history_current.json</span></div>
+      </article>
+
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">FISH SUMMARY</div>
+            <div class="section-sub">Snapshot-level status and guardrails.</div>
+          </div>
+        </div>
+        <div class="accum-grid">
+      <article class="panel">
+        <h3>Snapshot Summary</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Compact operator summary for the same snapshot that feeds HTML, JSON, Markdown, and Telegram.</div>
+        <div class="diag-item"><span class="detail-label">Schema</span><span class="detail-value mono">WATER_FISH_OPERATOR_SNAPSHOT_V1</span></div><div class="diag-item"><span class="detail-label">Snapshot generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Report generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Current fish count</span><span class="detail-value mono">4</span></div><div class="diag-item"><span class="detail-label">Current fish status</span><span class="detail-value mono">MATERIALIZED</span></div><div class="diag-item"><span class="detail-label">History status</span><span class="detail-value mono">SOURCE_SURFACES_MISSING</span></div><div class="diag-item"><span class="detail-label">Source authority</span><span class="detail-value mono">CANONICAL_CURRENT</span></div><div class="diag-item"><span class="detail-label">Source mode</span><span class="detail-value mono">CANONICAL_CURRENT</span></div><div class="diag-item"><span class="detail-label">Source report schema</span><span class="detail-value mono">WATER_FISH_OPERATOR_REPORT_CONTRACT_V1</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>Warnings and Gaps</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Honesty markers are kept explicit instead of collapsing them into hidden implementation detail.</div>
+        <div class="diag-item"><span class="detail-label">Global blockers</span><span class="detail-value mono">none</span></div><div class="diag-item"><span class="detail-label">Global degradations</span><span class="detail-value mono">Fish history surfaces missing: water_fish_history_current.json, fish_lifecycle_ledger_current.json, fish_event_history_current.json</span></div><div class="diag-item"><span class="detail-label">Semantic warnings</span><span class="detail-value mono">Current Fish snapshot consumes only report_contract.current_water.surface., Fish IDs may change between independent live generations; validation compares profiles generated from the same source generation., Legacy reference, stale shadow, AIR, comparison, and historical export surfaces are not used for current Fish snapshot., Closed paper is moved to expanded detail and remains observational.</span></div><div class="diag-item"><span class="detail-label">Unknown items</span><span class="detail-value mono">first_seen, last_seen, source_lineage_id</span></div>
+      </article>
+    </div>
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">COPY CHAT HANDOFF</div>
+            <div class="section-sub">Copyable, self-contained handoff derived from the same snapshot.</div>
+          </div>
+        </div>
+
+      <div class="handoff-toolbar">
+        <button class="action-button" type="button" onclick="copyChatHandoff()">Copy Chat Handoff</button>
+        <span class="status-note">Clipboard failure leaves the text visible.</span>
+      </div>
+      <textarea id="fish-handoff-copy" class="handoff-textarea" readonly spellcheck="false">WATER_FISH_OPERATOR_HANDOFF_V1
+
+SNAPSHOT_GENERATED_AT: 2026-07-19T18:47:58Z
+REPORT_GENERATED_AT: 2026-07-19T18:47:58Z
+SOURCE_GENERATED_AT:
+- fish: 2026-07-19T18:47:54Z
+- projection: 2026-07-15T20:59:13Z
+- lifecycle: 2026-07-15T20:59:13Z
+- movement: 2026-07-15T19:59:02Z
+- paper: 2026-07-17T19:29:37Z
+SOURCE_SEARCH_GENERATED_AT: 2026-07-17T19:29:36Z
+PHASE_B_RUN_AT: 2026-07-19T18:47:58Z
+SOURCE_DELIVERY_TIME: 2026-07-19T18:47:58Z
+SOURCE_MODE: CANONICAL_CURRENT
+SOURCE_AUTHORITY_CLASS: CANONICAL_CURRENT
+SOURCE_CONTRACT_PATH: report_contract.current_water.surface
+SOURCE_GENERATION_ID: WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af
+SOURCE_SNAPSHOT_ID: MATCH_SNAPSHOT_b069b8fd_-17T19-29-37
+SOURCE_LINEAGE_ID: null
+HEAD_SHA: cad7eabcd1f1ca62de43e12913d9c0e996ea061e
+
+CURRENT_FISH_COUNT: 4
+CURRENT_FISH_STATUS: MATERIALIZED
+
+FISH_HISTORY_STATUS: SOURCE_SURFACES_MISSING
+FISH_HISTORY_MISSING_SURFACES:
+- water_fish_history_current.json
+- fish_lifecycle_ledger_current.json
+- fish_event_history_current.json
+FISH:
+- fish_id: WATER_CANONICAL_FISH::236d897c48db1d135e57
+  fish_state: MATCH_ELIGIBLE_FOR_FISH
+  projection_count: 3
+  pairs: EURGBP, EURUSD, GBPUSD
+  lifecycle_summary: birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::6ba0fc95e141628b7322
+  movement_summary: pair_manifestations=3; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json
+  observation_status: MATERIALIZED; water_canonical_paper_current.json is present
+  degradation_flags: B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.
+  first_seen: null
+  last_seen: null
+  source_projection_ids: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::109f89c2648d9657bdc0, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1f7a4274329d8d3bb5f7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::a8f8b6e054a0cdc754aa
+  source_generation_id: WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af
+  source_snapshot_id: MATCH_SNAPSHOT_b069b8fd_-17T19-29-37
+  source_lineage_id: null
+- fish_id: WATER_CANONICAL_FISH::7c9e3f662babbca25335
+  fish_state: MATCH_ELIGIBLE_FOR_FISH
+  projection_count: 3
+  pairs: AUDUSD, USDCHF, USDJPY
+  lifecycle_summary: birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::f1a3a22c5f513a9c83dc
+  movement_summary: pair_manifestations=3; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json
+  observation_status: MATERIALIZED; water_canonical_paper_current.json is present
+  degradation_flags: B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.
+  first_seen: null
+  last_seen: null
+  source_projection_ids: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1058462635c541129cc7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::72ff3aacbbd3707de03c, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::84fbf35fd211bd45e172
+  source_generation_id: WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af
+  source_snapshot_id: MATCH_SNAPSHOT_b069b8fd_-17T19-29-37
+  source_lineage_id: null
+- fish_id: WATER_CANONICAL_FISH::93b396e9a5c7b1b9fc69
+  fish_state: MATCH_ELIGIBLE_FOR_FISH
+  projection_count: 2
+  pairs: NZDUSD, USDCAD
+  lifecycle_summary: birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::f8cf56d4309c70ec676e
+  movement_summary: pair_manifestations=2; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json
+  observation_status: MATERIALIZED; water_canonical_paper_current.json is present
+  degradation_flags: B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.
+  first_seen: null
+  last_seen: null
+  source_projection_ids: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::160876e49b47f85a3815, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::3a2e013aee07aa8ea8c1
+  source_generation_id: WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af
+  source_snapshot_id: MATCH_SNAPSHOT_b069b8fd_-17T19-29-37
+  source_lineage_id: null
+- fish_id: WATER_CANONICAL_FISH::a157bc3853b8e6978d75
+  fish_state: MATCH_ELIGIBLE_FOR_FISH
+  projection_count: 2
+  pairs: GBPJPY, USDJPY
+  lifecycle_summary: birth=FISH_BORN; match=MATCH_ELIGIBLE_FOR_FISH; integrity=PASS; source_match=2026-07-19T18:47:49Z; candidate=WATER_CANONICAL_CANDIDATE::4a904df3bf38a9c8a9da
+  movement_summary: pair_manifestations=2; window=2026-07-10T04:01:13Z-&gt;2026-07-10T04:01:00Z; source=status/water_pipeline_b_match_snapshot_current.json
+  observation_status: MATERIALIZED; water_canonical_paper_current.json is present
+  degradation_flags: B2 only; no FOLLOW, PAPER, Telegram, or cadence authority., Preserves canonical MATCH provenance without rewriting upstream authority.
+  first_seen: null
+  last_seen: null
+  source_projection_ids: WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::b98f5af33a8d77024d3e, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::f715baf61cc8e7c80efb
+  source_generation_id: WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af
+  source_snapshot_id: MATCH_SNAPSHOT_b069b8fd_-17T19-29-37
+  source_lineage_id: null
+
+GLOBAL_BLOCKERS:
+GLOBAL_DEGRADATIONS:
+- Fish history surfaces missing: water_fish_history_current.json, fish_lifecycle_ledger_current.json, fish_event_history_current.json
+SEMANTIC_WARNINGS:
+- Current Fish snapshot consumes only report_contract.current_water.surface.
+- Fish IDs may change between independent live generations; validation compares profiles generated from the same source generation.
+- Legacy reference, stale shadow, AIR, comparison, and historical export surfaces are not used for current Fish snapshot.
+- Closed paper is moved to expanded detail and remains observational.
+UNKNOWN_ITEMS:
+- first_seen
+- last_seen
+- source_lineage_id
+
+HTML_REPORT_PATH: reports/water_fish_pair_accumulation/index.html
+DATA_PATH: reports/water_fish_pair_accumulation/data.json
+SNAPSHOT_PATH: reports/water_fish_pair_accumulation/fish_operator_snapshot.json
+</textarea>
+
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">AGGREGATE PAIR MANIFESTATIONS</div>
+            <div class="section-sub">Pair manifestations remain visible as a downstream companion to the current Fish block, not as the primary hierarchy.</div>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="compact-table"><thead><tr><th>Fish ID</th><th>Count</th><th>Pairs</th><th>Source projection IDs</th></tr></thead><tbody><tr><td class="mono">WATER_CANONICAL_FISH::236d897c48db1d135e57</td><td class="mono">3</td><td class="mono">EURGBP, EURUSD, GBPUSD</td><td class="mono">WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::109f89c2648d9657bdc0, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1f7a4274329d8d3bb5f7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::a8f8b6e054a0cdc754aa</td></tr><tr><td class="mono">WATER_CANONICAL_FISH::7c9e3f662babbca25335</td><td class="mono">3</td><td class="mono">AUDUSD, USDCHF, USDJPY</td><td class="mono">WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::1058462635c541129cc7, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::72ff3aacbbd3707de03c, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::84fbf35fd211bd45e172</td></tr><tr><td class="mono">WATER_CANONICAL_FISH::93b396e9a5c7b1b9fc69</td><td class="mono">2</td><td class="mono">NZDUSD, USDCAD</td><td class="mono">WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::160876e49b47f85a3815, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::3a2e013aee07aa8ea8c1</td></tr><tr><td class="mono">WATER_CANONICAL_FISH::a157bc3853b8e6978d75</td><td class="mono">2</td><td class="mono">GBPJPY, USDJPY</td><td class="mono">WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::b98f5af33a8d77024d3e, WATER_CANONICAL_FISH_PAIR_PROJECTION_BINDING::f715baf61cc8e7c80efb</td></tr></tbody></table></div>
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">EXPANDED TECHNICAL DETAILS</div>
+            <div class="section-sub">Projection, lifecycle, movement, paper, and provenance remain subordinate to the current Fish snapshot.</div>
+          </div>
+        </div>
+        <div class="accum-grid">
+      <article class="panel">
+        <h3>Projection</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Current Water projection summary and row-level provenance.</div>
+        <div class="diag-item"><span class="detail-label">Fish rows</span><span class="detail-value mono">4</span></div><div class="diag-item"><span class="detail-label">Projection rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Projection generation id</span><span class="detail-value mono">WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af</span></div><div class="diag-item"><span class="detail-label">Projection net pips</span><span class="detail-value mono">-1.05</span></div><div class="diag-item"><span class="detail-label">Projection delta pips</span><span class="detail-value mono">-1.05</span></div><div class="diag-item"><span class="detail-label">Projection validity</span><span class="detail-value mono">True</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>Projection Lifecycle</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Lifecycle evidence remains subordinate to the Fish-first snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Lifecycle rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Lifecycle summary rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Movement evidence applied</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Unique observables</span><span class="detail-value mono">9</span></div><div class="diag-item"><span class="detail-label">Projection ids preserved</span><span class="detail-value mono">10</span></div>
+      </article>
+    </div><div style="margin-top:14px;"><div class="table-wrap"><table class="compact-table"><thead><tr><th>Projection ID</th><th>Pair</th><th>Fish ID</th><th>Type</th><th>Generated at</th></tr></thead><tbody><tr><td class="mono">WATER_CANONICAL_PROJECTION::1895b16195d22ea4fb30</td><td class="mono">EURGBP</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::15520c157a8af7637199</td><td class="mono">EURUSD</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::0d0dad76b7af9bf77eb5</td><td class="mono">GBPUSD</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::25b3f3b4826238b0d75f</td><td class="mono">NZDUSD</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::099062d754f92bc1da55</td><td class="mono">USDCAD</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::f1e0bb858bb3156cc4b7</td><td class="mono">AUDUSD</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::5d77c733e88771fd9113</td><td class="mono">USDCHF</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::a5a463f807ccafa5e2aa</td><td class="mono">USDJPY</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::022ddefa38aa7413d78e</td><td class="mono">GBPJPY</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr><tr><td class="mono">WATER_CANONICAL_PROJECTION::4d28ec763b0040a32866</td><td class="mono">USDJPY</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">pair</td><td class="mono">2026-07-15T20:59:13Z</td></tr></tbody></table></div></div><div class="accum-grid" style="margin-top:14px;">
+      <article class="panel">
+        <h3>Movement Evidence</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Movement evidence is presented as a technical detail, not as a trading interpretation.</div>
+        <div class="diag-item"><span class="detail-label">Movement rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Movement summary rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Matched projections</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Unmatched projections</span><span class="detail-value mono">0</span></div><div class="diag-item"><span class="detail-label">Follow duplicates</span><span class="detail-value mono">0</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>Paper Observation</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Paper observation remains observational and is not reinterpreted as profit, loss, quality, or signal.</div>
+        <div class="diag-item"><span class="detail-label">Paper status</span><span class="detail-value mono">MATERIALIZED</span></div><div class="diag-item"><span class="detail-label">Paper reason</span><span class="detail-value mono">water_canonical_paper_current.json is present</span></div><div class="diag-item"><span class="detail-label">Paper rows</span><span class="detail-value mono">10</span></div><div class="diag-item"><span class="detail-label">Observed / caught</span><span class="detail-value mono">10 / 10</span></div>
+      </article>
+    </div><div style="margin-top:14px;"><div class="table-wrap"><table class="compact-table"><thead><tr><th>Movement ID</th><th>Fish ID</th><th>Pair</th><th>Follow state</th><th>Net pips</th><th>Current time</th></tr></thead><tbody><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::8904ea88c58373c72c52</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">GBPJPY</td><td class="mono">READY_FOR_FOLLOW</td><td class="mono">-1.3</td><td class="mono">2026-07-14T15:08:01Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::ca5cbd34d8e2de6a8537</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">USDCAD</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">-3.0</td><td class="mono">2026-07-14T15:08:01Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::f6f642941ed101d31cba</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">GBPUSD</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">0.0</td><td class="mono">2026-07-15T19:59:02Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::a6fe2d06389fa0219d1c</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">EURUSD</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">0.0</td><td class="mono">2026-07-15T19:59:01Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::23485cedd1df17833ea7</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">EURGBP</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">0.0</td><td class="mono">2026-07-15T19:59:01Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::81039c9a5042609adf82</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">NZDUSD</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">4.8</td><td class="mono">2026-07-14T15:08:01Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::7ca8d6c9acf4155dedca</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">USDJPY</td><td class="mono">READY_FOR_FOLLOW</td><td class="mono">0.0</td><td class="mono">2026-07-15T19:59:02Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::3d73c9b4e68880d214cb</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">USDCHF</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">-1.1</td><td class="mono">2026-07-15T19:02:06Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::e3699a70b3f39f75a0cc</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">USDJPY</td><td class="mono">READY_FOR_FOLLOW</td><td class="mono">-0.35</td><td class="mono">2026-07-15T19:02:06Z</td></tr><tr><td class="mono">WATER_PROJECTION_MOVEMENT_EVIDENCE::e533dc612532712f08fc</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">AUDUSD</td><td class="mono">CANDIDATE_ONLY</td><td class="mono">-0.1</td><td class="mono">2026-07-15T19:02:03Z</td></tr></tbody></table></div></div><div style="margin-top:14px;"><div class="table-wrap"><table class="compact-table"><thead><tr><th>Paper row ID</th><th>Fish ID</th><th>Pair</th><th>Observed at</th><th>Net pips</th><th>Status</th></tr></thead><tbody><tr><td class="mono">WATER_CANONICAL_PAPER::b9eda1a883944ddcd22a</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">-0.1</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::5f68e2a2af6ad71d32fa</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">0.0</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::264a8132c2d77e41bbf1</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">0.0</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::ba1fde86c63b1ee980a6</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">-1.3</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::d1ba96473a97766f041a</td><td class="mono">WATER_CANONICAL_FISH::05c1d58e79d2e66cc37d</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">0.0</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::abd07caf4c4854d13348</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">4.8</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::a8ffba64b7fd877ff7be</td><td class="mono">WATER_CANONICAL_FISH::8624a6de027cf87793dc</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">-3.0</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::e8c78d395458a204e258</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">-1.1</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::1181ce66732983a895c2</td><td class="mono">WATER_CANONICAL_FISH::d428c0d932d49cb6c06c</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">0.0</td><td class="mono">PASS</td></tr><tr><td class="mono">WATER_CANONICAL_PAPER::1ef102d4e7d33c2f07a2</td><td class="mono">WATER_CANONICAL_FISH::a293948db7736d8d94b4</td><td class="mono">n/a</td><td class="mono">2026-07-15T21:00:47Z</td><td class="mono">-0.35</td><td class="mono">PASS</td></tr></tbody></table></div></div><div style="margin-top:14px;">
+      <article class="panel">
+        <h3>Provenance</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Traceability remains bound to the same current-water source block.</div>
+        <div class="diag-item"><span class="detail-label">Source report schema</span><span class="detail-value mono">WATER_FISH_OPERATOR_REPORT_CONTRACT_V1</span></div><div class="diag-item"><span class="detail-label">Source report path</span><span class="detail-value mono">reports/water_fish_pair_accumulation/data.json</span></div><div class="diag-item"><span class="detail-label">Source contract path</span><span class="detail-value mono">report_contract.current_water.surface</span></div><div class="diag-item"><span class="detail-label">Source authority class</span><span class="detail-value mono">CANONICAL_CURRENT</span></div><div class="diag-item"><span class="detail-label">Source generation id</span><span class="detail-value mono">WATER_CANONICAL_PROJECTION_GENERATION::e10e6b62ae088a0668af</span></div><div class="diag-item"><span class="detail-label">Source snapshot id</span><span class="detail-value mono">MATCH_SNAPSHOT_b069b8fd_-17T19-29-37</span></div><div class="diag-item"><span class="detail-label">Source lineage id</span><span class="detail-value mono">n/a</span></div><div class="diag-item"><span class="detail-label">Source search generated at</span><span class="detail-value mono">2026-07-17T19:29:36Z</span></div><div class="diag-item"><span class="detail-label">Phase B run at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Source delivery time</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+    </div>
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">REFERENCE SECTIONS</div>
+            <div class="section-sub">Legacy, stale shadow, AIR, comparison, and historical exports stay visible as subordinate references only.</div>
+          </div>
+        </div>
+
+      <article class="panel">
+        <h3>LEGACY REFERENCE</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Not used for current Fish snapshot. Legacy reference remains available for comparison, but not for the current Fish snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Authority class</span><span class="detail-value mono">LEGACY_REFERENCE</span></div><div class="diag-item"><span class="detail-label">Allowed for current fish snapshot</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Generation alignment proven</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Source paths</span><span class="detail-value mono">status/regime_fx_search_network_current.json, status/fish_event_current.json, status/pair_follow_mode_current.json, status/regime_fx_paper_observation_current.json, status/water_total_fish_export_current.json</span></div><div class="diag-item"><span class="detail-label">Generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>STALE SHADOW</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Not used for current Fish snapshot. Stale shadow remains explicit and is not used for the current Fish snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Authority class</span><span class="detail-value mono">LEGACY_SHADOW</span></div><div class="diag-item"><span class="detail-label">Allowed for current fish snapshot</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Generation alignment proven</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Source paths</span><span class="detail-value mono">status/regime_fx_search_network_canonical_shadow_current.json, status/fish_event_canonical_shadow_current.json, status/pair_follow_mode_canonical_shadow_current.json, status/regime_fx_paper_observation_canonical_shadow_current.json</span></div><div class="diag-item"><span class="detail-label">Generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div><div class="diag-item"><span class="detail-label">Warning</span><span class="detail-value mono">STALE_SHADOW_NOT_CURRENT_AUTHORITY</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>AIR REFERENCE</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Not used for current Fish snapshot. AIR remains separate and is not used for the current Fish snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Authority class</span><span class="detail-value mono">AIR</span></div><div class="diag-item"><span class="detail-label">Allowed for current fish snapshot</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Generation alignment proven</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Source paths</span><span class="detail-value mono">status/air_canonical_fish_current.json, status/air_canonical_follow_current.json, status/air_canonical_paper_current.json</span></div><div class="diag-item"><span class="detail-label">Generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>COMPARISON</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Not used for current Fish snapshot. Comparison remains separate and is not used for the current Fish snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Authority class</span><span class="detail-value mono">COMPARISON</span></div><div class="diag-item"><span class="detail-label">Allowed for current fish snapshot</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Generation alignment proven</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Source paths</span><span class="detail-value mono">status/regime_fx_search_legacy_canonical_comparison_current.json</span></div><div class="diag-item"><span class="detail-label">Generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+
+      <article class="panel">
+        <h3>HISTORICAL EXPORTS</h3>
+        <div class="section-sub" style="margin-bottom:10px;">Not used for current Fish snapshot. Historical exports remain separate and are not used for the current Fish snapshot.</div>
+        <div class="diag-item"><span class="detail-label">Authority class</span><span class="detail-value mono">HISTORICAL_EXPORT</span></div><div class="diag-item"><span class="detail-label">Allowed for current fish snapshot</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Generation alignment proven</span><span class="detail-value mono">NO</span></div><div class="diag-item"><span class="detail-label">Source paths</span><span class="detail-value mono">status/water_total_fish_export_current.json, exports/water_total_fish/WATER_TOTAL_FISH_EXPORT_V0_2026-06-28T13-46-37Z.zip</span></div><div class="diag-item"><span class="detail-label">Generated at</span><span class="detail-value mono">2026-07-19T18:47:58Z</span></div><div class="diag-item"><span class="detail-label">Head SHA</span><span class="detail-value mono">cad7eabcd1f1ca62de43e12913d9c0e996ea061e</span></div>
+      </article>
+
+      </section>
+
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="section-title">DIAGNOSTICS</div>
+            <div class="section-sub">Missing sources, row-count mismatches, duplicated pairs, duplicate stable keys, identity collisions, and stale source warnings.</div>
+          </div>
+        </div>
+        <div class="diag-grid">
+          <article class="panel">
+            <h3>Missing Sources</h3>
+            <div class="diag-item mono">status/water_fish_history_current.json</div><div class="diag-item mono">status/fish_lifecycle_ledger_current.json</div><div class="diag-item mono">status/fish_event_history_current.json</div>
+          </article>
+          <article class="panel">
+            <h3>Row Count Mismatches</h3>
+            <div class="muted">none</div>
+          </article>
+          <article class="panel">
+            <h3>Duplicated Pairs</h3>
+            <div class="diag-item mono">USDJPY x2</div>
+          </article>
+          <article class="panel">
+            <h3>Duplicate Stable Keys</h3>
+            <div class="diag-item mono">28</div>
+          </article>
+          <article class="panel">
+            <h3>Identity Collisions</h3>
+            <div class="diag-item mono">0</div>
+          </article>
+          <article class="panel">
+            <h3>Stale Source Warnings</h3>
+            <div class="diag-item mono">status/regime_fx_search_network_current.json age_hours=47.31</div><div class="diag-item mono">status/water_total_fish_export_current.json age_hours=509.02</div>
+          </article>
+
+        </div>
+      </section>
+
+
+  </div>
+  <script>
+    let autoReloadHandle = null;
+    function refreshReport() {
+      window.location.reload();
+    }
+    async function copyChatHandoff() {
+      const textarea = document.getElementById("fish-handoff-copy");
+      if (!textarea) {
+        return;
+      }
+      const text = textarea.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return;
+        } catch (error) {
+          // Fall back to the visible textarea selection below.
+        }
+      }
+      textarea.focus();
+      textarea.select();
+    }
+    function toggleAutoReload(enabled) {
+      if (autoReloadHandle !== null) {
+        clearInterval(autoReloadHandle);
+        autoReloadHandle = null;
+      }
+      if (enabled) {
+        autoReloadHandle = setInterval(refreshReport, 60000);
+      }
+    }
+  </script>
+</body>
+</html>
