@@ -1,343 +1,685 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>AIR Operator Telemetry and Fish Page</title>
+
   <style>
+
     :root {
+
       color-scheme: light;
+
       --bg: #f3f6fb;
+
       --panel: rgba(255, 255, 255, 0.94);
+
       --text: #102033;
+
       --muted: #5c6c80;
+
       --accent: #2457d6;
+
       --accent-soft: rgba(36, 87, 214, 0.12);
+
       --border: rgba(16, 32, 51, 0.12);
+
       --shadow: 0 18px 50px rgba(16, 32, 51, 0.08);
+
     }
+
     * { box-sizing: border-box; }
+
     body {
+
       margin: 0;
+
       font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
       background:
+
         radial-gradient(circle at top left, rgba(36, 87, 214, 0.14), transparent 28%),
+
         radial-gradient(circle at top right, rgba(36, 87, 214, 0.08), transparent 24%),
+
         var(--bg);
+
       color: var(--text);
+
     }
+
     main {
+
       max-width: 1400px;
+
       margin: 0 auto;
+
       padding: 32px 24px 48px;
+
     }
+
     .hero {
+
       background: linear-gradient(135deg, rgba(36, 87, 214, 0.12), rgba(255, 255, 255, 0.9));
+
       border: 1px solid var(--border);
+
       border-radius: 24px;
+
       box-shadow: var(--shadow);
+
       padding: 28px;
+
       margin-bottom: 20px;
+
     }
+
     .eyebrow {
+
       text-transform: uppercase;
+
       letter-spacing: 0.16em;
+
       color: var(--accent);
+
       font-size: 12px;
+
       font-weight: 700;
+
     }
+
     h1 {
+
       margin: 8px 0 12px;
+
       font-size: clamp(28px, 4vw, 44px);
+
       line-height: 1.05;
+
     }
+
     .lead {
+
       margin: 0;
+
       max-width: 1024px;
+
       color: var(--muted);
+
       line-height: 1.6;
+
       font-size: 16px;
+
     }
+
     .hero-meta {
+
       margin-top: 16px;
+
       display: flex;
+
       flex-wrap: wrap;
+
       gap: 10px;
+
     }
+
     .badge {
+
       border-radius: 999px;
+
       background: var(--accent-soft);
+
       color: var(--accent);
+
       padding: 8px 12px;
+
       font-size: 12px;
+
       font-weight: 700;
+
       letter-spacing: 0.02em;
+
     }
+
     .grid {
+
       display: grid;
+
       grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+
       gap: 16px;
+
       margin: 20px 0;
+
     }
+
     .panel {
+
       background: var(--panel);
+
       border: 1px solid var(--border);
+
       border-radius: 20px;
+
       box-shadow: var(--shadow);
+
       padding: 18px;
+
     }
+
     .warning-panel {
+
       border-color: rgba(184, 92, 0, 0.25);
+
       background: linear-gradient(180deg, rgba(255, 246, 230, 0.94), rgba(255, 255, 255, 0.92));
+
     }
+
     .panel-head h2 {
+
       margin: 0 0 8px;
+
       font-size: 18px;
+
     }
+
     .subtitle {
+
       color: var(--muted);
+
       line-height: 1.5;
+
       font-size: 13px;
+
     }
+
     .kv-table {
+
       width: 100%;
+
       border-collapse: collapse;
+
       margin-top: 12px;
+
     }
+
     .kv-table th,
+
     .kv-table td {
+
       padding: 8px 0;
+
       vertical-align: top;
+
       text-align: left;
+
       border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+
       font-size: 14px;
+
     }
+
     .kv-table th {
+
       width: 42%;
+
       color: var(--muted);
+
       font-weight: 600;
+
       padding-right: 14px;
+
     }
+
     .kv-table td {
+
       font-weight: 500;
+
     }
+
     .table-wrap {
+
       overflow-x: auto;
+
       margin-top: 12px;
+
     }
+
     .data-table {
+
       width: 100%;
+
       border-collapse: collapse;
+
       background: var(--panel);
+
       border-radius: 16px;
+
       overflow: hidden;
+
       box-shadow: var(--shadow);
+
     }
+
     .data-table th,
+
     .data-table td {
+
       padding: 12px 10px;
+
       border-bottom: 1px solid rgba(16, 32, 51, 0.08);
+
       font-size: 13px;
+
       text-align: left;
+
       vertical-align: top;
+
       white-space: nowrap;
+
     }
+
     .data-table thead th {
+
       background: rgba(36, 87, 214, 0.08);
+
       color: var(--text);
+
       font-weight: 700;
+
     }
+
     .empty {
+
       color: var(--muted);
+
       padding: 14px 4px 4px;
+
       font-size: 14px;
+
     }
+
     .warning-list {
+
       margin-top: 12px;
+
     }
+
     .warning-list strong {
+
       display: block;
+
       margin-bottom: 6px;
+
     }
+
     .warning-list ul {
+
       margin: 0;
+
       padding-left: 18px;
+
       color: var(--muted);
+
       line-height: 1.5;
+
     }
+
     .section-title {
+
       display: flex;
+
       align-items: baseline;
+
       justify-content: space-between;
+
       gap: 12px;
+
       margin: 28px 0 12px;
+
     }
+
     .section-title h2 {
+
       margin: 0;
+
       font-size: 22px;
+
     }
+
     .section-note {
+
       color: var(--muted);
+
       font-size: 13px;
+
     }
+
   </style>
+
 </head>
+
 <body>
+
   <main>
+
     <section class="hero">
+
       <div class="eyebrow">AIR Operator Telemetry</div>
+
       <h1>Fish and Delta Semantics</h1>
+
       <p class="lead">
+
         The page separates canonical current fish from the legacy AIR_FISH ledger, terminal closed fish, and follow projections.
+
         Follow counts remain projections and are not fish counts. Legacy delta accumulation is shown only under an explicit legacy label.
+
       </p>
+
       <div class="hero-meta">
+
         <span class="badge">Presentation-only operator page</span>
+
         <span class="badge">Current fish source: status/air_canonical_fish_current.json</span>
+
         <span class="badge">Legacy ledger source: status/air_fish_lifecycle_history_current.json</span>
+
       </div>
+
     </section>
+
+
+
 
 
       <section class="grid">
 
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>AIR Telemetry</h2>
+
           <div class="subtitle">Telemetry follows canonical sources; follow projections are not fish counts.</div>
+
         </div>
+
         <table class="kv-table">
+
           <tbody>
+
             <tr><th>STATE COUNT</th><td>39</td></tr>
-<tr><th>FOLLOW PROJECTION COUNT</th><td>808</td></tr>
+
+<tr><th>FOLLOW PROJECTION COUNT</th><td>5612</td></tr>
+
 <tr><th>FOLLOW READY PROJECTION COUNT</th><td>4</td></tr>
-<tr><th>LATEST OBSERVATION</th><td>2026-07-18T19:03:43Z</td></tr>
-<tr><th>DATA FRESHNESS</th><td>{&quot;age_minutes&quot;: 2.08914415, &quot;freshness_label&quot;: &quot;CURRENT&quot;, &quot;latest_source_utc&quot;: &quot;2026-07-18T19:03:43Z&quot;}</td></tr>
+
+<tr><th>LATEST OBSERVATION</th><td>2026-07-20T21:41:49Z</td></tr>
+
+<tr><th>DATA FRESHNESS</th><td>{&quot;age_minutes&quot;: 0.43334235, &quot;freshness_label&quot;: &quot;CURRENT&quot;, &quot;latest_source_utc&quot;: &quot;2026-07-20T21:41:49Z&quot;}</td></tr>
+
 <tr><th>STATE SPACE STATUS</th><td>AIR_STATE_SPACE_MATERIALIZED_WITH_MODEL_LIMIT</td></tr>
+
 <tr><th>LIVE / ARCHIVE PARITY</th><td>SHARED_STATE_SIGNATURE_SPACE_WITH_MODEL_LIMIT</td></tr>
+
           </tbody>
+
         </table>
+
       </section>
 
 
+
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Fish Telemetry</h2>
+
           <div class="subtitle">Current, closed, and legacy ledger rows are tracked separately.</div>
+
         </div>
+
         <table class="kv-table">
+
           <tbody>
+
             <tr><th>CURRENT FISH</th><td>4</td></tr>
+
 <tr><th>CLOSED FISH</th><td>0</td></tr>
+
 <tr><th>LEGACY AIR_FISH LEDGER ROWS</th><td>39</td></tr>
+
 <tr><th>LEGACY LEDGER DELTA SUM</th><td>293373.0716666666</td></tr>
+
 <tr><th>CURRENT ACCUMULATED DELTA</th><td>N/A</td></tr>
+
 <tr><th>CLOSED REALIZED DELTA</th><td>N/A</td></tr>
+
 <tr><th>TOTAL ACCUMULATED DELTA</th><td>N/A</td></tr>
+
           </tbody>
+
         </table>
+
       </section>
 
 
+
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Canonical Sources</h2>
+
           <div class="subtitle">Exact canonical source and field names are surfaced explicitly.</div>
+
         </div>
+
         <table class="kv-table">
+
           <tbody>
+
             <tr><th>CURRENT_FISH_SOURCE</th><td>status/air_canonical_fish_current.json</td></tr>
+
 <tr><th>HISTORICAL_FISH_SOURCE</th><td>status/air_fish_lifecycle_history_current.json</td></tr>
+
 <tr><th>CLOSED_FISH_SOURCE</th><td>NOT_FOUND</td></tr>
+
 <tr><th>DELTA_SOURCE</th><td>status/air_fish_lifecycle_history_current.json</td></tr>
+
 <tr><th>CURRENT_FISH_ID_FIELD</th><td>fish_id</td></tr>
+
 <tr><th>CLOSED_FISH_ID_FIELD</th><td>NOT_FOUND</td></tr>
+
 <tr><th>DELTA_FIELD</th><td>delta_move</td></tr>
+
 <tr><th>TERMINAL_STATE_FIELD</th><td>history_status</td></tr>
+
           </tbody>
+
         </table>
+
       </section>
 
 
+
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Follow Projection Audit</h2>
+
           <div class="subtitle">Non-fish follow rows are expected projections, not fish join failures.</div>
+
         </div>
+
         <table class="kv-table">
+
           <tbody>
-            <tr><th>FOLLOW ROWS</th><td>808</td></tr>
+
+            <tr><th>FOLLOW ROWS</th><td>5612</td></tr>
+
 <tr><th>FOLLOW READY ROWS</th><td>4</td></tr>
-<tr><th>EXPECTED NON-FISH FOLLOW ROWS</th><td>804</td></tr>
+
+<tr><th>EXPECTED NON-FISH FOLLOW ROWS</th><td>5608</td></tr>
+
 <tr><th>TRUE CANONICAL JOIN WARNINGS</th><td>0</td></tr>
-<tr><th>CURRENT FISH JOINED TO PAPER</th><td>0</td></tr>
+
+<tr><th>CURRENT FISH JOINED TO PAPER</th><td>4</td></tr>
+
 <tr><th>CURRENT FISH WITH CANONICAL DELTA</th><td>0</td></tr>
+
           </tbody>
+
         </table>
-      </section>
 
       </section>
+
+
+
+      </section>
+
+
+
 
 
     <div class="section-title">
+
       <h2>Fish Tables</h2>
+
       <div class="section-note">Current and closed tables are distinct; the legacy AIR_FISH ledger is shown separately.</div>
+
     </div>
 
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Current Fish</h2>
+
           <div class="subtitle">One row per current fish. Missing canonical delta renders as N/A.</div>
+
         </div>
-        <div class="table-wrap"><table class="data-table"><thead><tr><th>Fish ID</th><th>Stable Fish Key</th><th>Candidate</th><th>Match State</th><th>Birth State</th><th>Current Paper Delta</th><th>Current Paper State</th></tr></thead><tbody><tr><td>AIR_CANONICAL_FISH::56ba31791d3473c34bf6</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::69ae65c7572ed4627cef|AIR_CANONICAL_MATCH::1f313ea3e801cc519362|AIR_SEARCH_CANDIDATE::3c75a0ef19cfb30f238b|ETHEUR|CANONICAL_SEARCH_DETECTION::17efd02464a9b410a984|AIR_REGIME_4dcb8d69c212d80873b7|AIR_RELATION_TOPOLOGY_STATE_da8d25ae5a8e6b6fbdd6|AIR_RELATION_TOPOLOGY_EVENT_2acc9e319e8dc8436175|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-18T18:59:31Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-18T19:00:03Z&quot;}</td><td>ETHEUR</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>N/A</td></tr><tr><td>AIR_CANONICAL_FISH::e3bb5a731c875c89626c</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::69ae65c7572ed4627cef|AIR_CANONICAL_MATCH::440035e9ae0147774171|AIR_SEARCH_CANDIDATE::9a64f01ba498cdd46d13|BTCUSDT|CANONICAL_SEARCH_DETECTION::17efd02464a9b410a984|AIR_REGIME_4dcb8d69c212d80873b7|AIR_RELATION_TOPOLOGY_STATE_da8d25ae5a8e6b6fbdd6|AIR_RELATION_TOPOLOGY_EVENT_2acc9e319e8dc8436175|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-18T18:59:31Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-18T19:00:03Z&quot;}</td><td>BTCUSDT</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>N/A</td></tr><tr><td>AIR_CANONICAL_FISH::bd2ea5907ca7a5ee3e5d</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::69ae65c7572ed4627cef|AIR_CANONICAL_MATCH::88813ffbfc9e32ee8599|AIR_SEARCH_CANDIDATE::41267ac8f3179f8759da|ETHUSDT|CANONICAL_SEARCH_DETECTION::17efd02464a9b410a984|AIR_REGIME_4dcb8d69c212d80873b7|AIR_RELATION_TOPOLOGY_STATE_da8d25ae5a8e6b6fbdd6|AIR_RELATION_TOPOLOGY_EVENT_2acc9e319e8dc8436175|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-18T18:59:31Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-18T19:00:03Z&quot;}</td><td>ETHUSDT</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>N/A</td></tr><tr><td>AIR_CANONICAL_FISH::a8dbe38542078ff6bee3</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::69ae65c7572ed4627cef|AIR_CANONICAL_MATCH::f74e28f6dc003f13c7c2|AIR_SEARCH_CANDIDATE::cb2d3a60d17e4f00e862|BTCEUR|CANONICAL_SEARCH_DETECTION::17efd02464a9b410a984|AIR_REGIME_4dcb8d69c212d80873b7|AIR_RELATION_TOPOLOGY_STATE_da8d25ae5a8e6b6fbdd6|AIR_RELATION_TOPOLOGY_EVENT_2acc9e319e8dc8436175|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-18T18:59:31Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-18T19:00:03Z&quot;}</td><td>BTCEUR</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>N/A</td></tr></tbody></table></div>
+
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Fish ID</th><th>Stable Fish Key</th><th>Candidate</th><th>Match State</th><th>Birth State</th><th>Current Paper Delta</th><th>Current Paper State</th></tr></thead><tbody><tr><td>AIR_CANONICAL_FISH::66807844a26620f0a687</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::482a844eb1259f1663f3|AIR_CANONICAL_MATCH::6c84655731b34fc88fdc|AIR_SEARCH_CANDIDATE::06399ad2783a668105ce|ETHUSDT|CANONICAL_SEARCH_DETECTION::24d8d6ced93899c8a558|AIR_REGIME_b7ed7ec9a74d228449a6|AIR_RELATION_TOPOLOGY_STATE_533e32dc93e0027cc1bb|AIR_RELATION_TOPOLOGY_EVENT_15fd0f252a9bac2572cc|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-20T21:40:27Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-20T21:40:37Z&quot;}</td><td>ETHUSDT</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>CURRENT_OBSERVATION</td></tr><tr><td>AIR_CANONICAL_FISH::39c72da16d696715d713</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::482a844eb1259f1663f3|AIR_CANONICAL_MATCH::8e943b2eb81a083818ce|AIR_SEARCH_CANDIDATE::04fec2f58e14e59d9f95|BTCUSDT|CANONICAL_SEARCH_DETECTION::24d8d6ced93899c8a558|AIR_REGIME_b7ed7ec9a74d228449a6|AIR_RELATION_TOPOLOGY_STATE_533e32dc93e0027cc1bb|AIR_RELATION_TOPOLOGY_EVENT_15fd0f252a9bac2572cc|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-20T21:40:27Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-20T21:40:37Z&quot;}</td><td>BTCUSDT</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>CURRENT_OBSERVATION</td></tr><tr><td>AIR_CANONICAL_FISH::f8704b0859e9f8a691e5</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::482a844eb1259f1663f3|AIR_CANONICAL_MATCH::b24a736b72ffd227645c|AIR_SEARCH_CANDIDATE::6fb29b31d880d38e0249|ETHEUR|CANONICAL_SEARCH_DETECTION::24d8d6ced93899c8a558|AIR_REGIME_b7ed7ec9a74d228449a6|AIR_RELATION_TOPOLOGY_STATE_533e32dc93e0027cc1bb|AIR_RELATION_TOPOLOGY_EVENT_15fd0f252a9bac2572cc|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-20T21:40:27Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-20T21:40:37Z&quot;}</td><td>ETHEUR</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>CURRENT_OBSERVATION</td></tr><tr><td>AIR_CANONICAL_FISH::8ce96cbe6aee8c3b8d85</td><td>AIR|AIR_CANONICAL_FISH_V0|AIR_CANONICAL_MATCH_SNAPSHOT::482a844eb1259f1663f3|AIR_CANONICAL_MATCH::f14062f3cdea2454f00f|AIR_SEARCH_CANDIDATE::d39ad6b1a28694fc8fb5|BTCEUR|CANONICAL_SEARCH_DETECTION::24d8d6ced93899c8a558|AIR_REGIME_b7ed7ec9a74d228449a6|AIR_RELATION_TOPOLOGY_STATE_533e32dc93e0027cc1bb|AIR_RELATION_TOPOLOGY_EVENT_15fd0f252a9bac2572cc|AIR_RELATION_COMPONENT_ee786aa64b9b1e9d|{&quot;from_inclusive&quot;:&quot;2026-07-20T21:40:27Z&quot;,&quot;source_count&quot;:3,&quot;source_symbol_edge_count&quot;:12,&quot;symbol_count&quot;:4,&quot;to_inclusive&quot;:&quot;2026-07-20T21:40:37Z&quot;}</td><td>BTCEUR</td><td>MATCH_ELIGIBLE_FOR_FISH</td><td>FISH_BORN</td><td>N/A</td><td>CURRENT_OBSERVATION</td></tr></tbody></table></div>
+
       </section>
 
 
+
+
+
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Closed Fish</h2>
+
           <div class="subtitle">No canonical closed fish source was found; terminal rows are empty in the live state.</div>
+
         </div>
+
         <div class="empty">No closed fish rows</div>
+
       </section>
+
+
+
 
 
       <section class="panel">
+
         <div class="panel-head">
+
           <h2>Legacy AIR_FISH Ledger</h2>
+
           <div class="subtitle">This ledger is not canonically joined to current AIR_CANONICAL_FISH identities.</div>
+
         </div>
+
         <div class="table-wrap"><table class="data-table"><thead><tr><th>Fish ID</th><th>Stable Identity Key</th><th>Terminal State</th><th>Finished</th><th>Delta Move</th><th>Net Move</th><th>Gross Move</th><th>Last Observed</th><th>Observation Count</th></tr></thead><tbody><tr><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE|HIGH_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-2022.423333333325</td><td>-2022.423333333325</td><td>2022.423333333325</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|HIGH_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>37683.08333333334</td><td>37683.08333333334</td><td>37683.08333333334</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|stale|THREE_SOURCE|STALE_ONLY</td><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|stale|THREE_SOURCE|STALE_ONLY|AIR_FISH_EVENT::HIGH_DISAGREEMENT|NORMAL|stale|THREE_SOURCE|STALE_ONLY|HIGH_DISAGREEMENT|NORMAL|stale|THREE_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-1859.629999999997</td><td>-1859.629999999997</td><td>1859.629999999997</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::HIGH_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::HIGH_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|HIGH_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>5602.400000000005</td><td>5602.400000000005</td><td>5602.400000000005</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE|HIGH_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-2099.200000000004</td><td>-2099.200000000004</td><td>2099.200000000004</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|HIGH_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>5794.215000000004</td><td>5794.215000000004</td><td>5794.215000000004</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::HIGH_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::HIGH_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|HIGH_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-3235.444999999996</td><td>-3235.444999999996</td><td>3235.444999999996</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE|HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-2258.518333333333</td><td>-2258.518333333333</td><td>2258.518333333333</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD|HIGH_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>-2010.223333333335</td><td>-2010.223333333335</td><td>2010.223333333335</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>146.616666666669</td><td>146.616666666669</td><td>146.616666666669</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|HIGH_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>-432.281666666662</td><td>-432.281666666662</td><td>432.281666666662</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::HIGH_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::HIGH_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|HIGH_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>8104.366666666669</td><td>8104.366666666669</td><td>8104.366666666669</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|fresh|TWO_SOURCE|STABLE</td><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|fresh|TWO_SOURCE|STABLE|AIR_FISH_EVENT::LOW_DISAGREEMENT|NORMAL|fresh|TWO_SOURCE|STABLE|LOW_DISAGREEMENT|NORMAL|fresh|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1864.516666666663</td><td>-1864.516666666663</td><td>1864.516666666663</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::LOW_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|LOW_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>7253.245000000006</td><td>7253.245000000006</td><td>7253.245000000006</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::LOW_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::LOW_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|LOW_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>34139.12666666668</td><td>34139.12666666668</td><td>34139.12666666668</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::LOW_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::LOW_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|LOW_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>34165.32999999999</td><td>34165.32999999999</td><td>34165.32999999999</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::LOW_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::LOW_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|LOW_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-6714.98166666667</td><td>-6714.98166666667</td><td>6714.98166666667</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>36830.933333333334</td><td>36830.933333333334</td><td>36830.933333333334</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|LOW_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>292.195000000007</td><td>292.195000000007</td><td>292.195000000007</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::LOW_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::LOW_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|LOW_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>35379.573333333334</td><td>35379.573333333334</td><td>35379.573333333334</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE|MEDIUM_DISAGREEMENT|NORMAL|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1393.191666666673</td><td>-1393.191666666673</td><td>1393.191666666673</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|THREE_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|THREE_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|NORMAL|partial|THREE_SOURCE|STABLE|MEDIUM_DISAGREEMENT|NORMAL|partial|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1871.340000000004</td><td>-1871.340000000004</td><td>1871.340000000004</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE|MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>5327.195000000003</td><td>5327.195000000003</td><td>5327.195000000003</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|NORMAL|partial|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-3094.188333333328</td><td>-3094.188333333328</td><td>3094.188333333328</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|NORMAL|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>34253.06999999999</td><td>34253.06999999999</td><td>34253.06999999999</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE|MEDIUM_DISAGREEMENT|TIGHT|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1243.385000000002</td><td>-1243.385000000002</td><td>1243.385000000002</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|partial|THREE_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|partial|THREE_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|TIGHT|partial|THREE_SOURCE|STABLE|MEDIUM_DISAGREEMENT|TIGHT|partial|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1886.139999999999</td><td>-1886.139999999999</td><td>1886.139999999999</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE|MEDIUM_DISAGREEMENT|TIGHT|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>36381.886666666665</td><td>36381.886666666665</td><td>36381.886666666665</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|TIGHT|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>4942.116666666658</td><td>4942.116666666658</td><td>4942.116666666658</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE|MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>-1678.823333333334</td><td>-1678.823333333334</td><td>1678.823333333334</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD|MEDIUM_DISAGREEMENT|WIDE|fresh|THREE_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>-1590.636666666673</td><td>-1590.636666666673</td><td>1590.636666666673</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|TWO_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|fresh|TWO_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|fresh|TWO_SOURCE|WIDE_SPREAD|MEDIUM_DISAGREEMENT|WIDE|fresh|TWO_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>-1360.643333333333</td><td>-1360.643333333333</td><td>1360.643333333333</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE|MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STABLE</td><td>CURRENT</td><td>NO</td><td>7244.666666666664</td><td>7244.666666666664</td><td>7244.666666666664</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>0.0</td><td>0.0</td><td>0.0</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD|MEDIUM_DISAGREEMENT|WIDE|partial|TWO_SOURCE|WIDE_SPREAD</td><td>CURRENT</td><td>NO</td><td>6445.89333333333</td><td>6445.89333333333</td><td>6445.89333333333</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|stale|THREE_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|stale|THREE_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|stale|THREE_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|WIDE|stale|THREE_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-1886.583333333336</td><td>-1886.583333333336</td><td>1886.583333333336</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>AIR_FISH::MEDIUM_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|AIR_FISH_EVENT::MEDIUM_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY|MEDIUM_DISAGREEMENT|WIDE|stale|TWO_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>34713.546666666676</td><td>34713.546666666676</td><td>34713.546666666676</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|partial|ONE_SOURCE|PARTIAL_SOURCE</td><td>AIR_FISH::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|partial|ONE_SOURCE|PARTIAL_SOURCE|AIR_FISH_EVENT::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|partial|ONE_SOURCE|PARTIAL_SOURCE|PARTIAL_SOURCE_DISAGREEMENT|TIGHT|partial|ONE_SOURCE|PARTIAL_SOURCE</td><td>CURRENT</td><td>NO</td><td>-1448.255000000001</td><td>-1448.255000000001</td><td>1448.255000000001</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr><tr><td>AIR_FISH::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|stale|ONE_SOURCE|STALE_ONLY</td><td>AIR_FISH::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|stale|ONE_SOURCE|STALE_ONLY|AIR_FISH_EVENT::PARTIAL_SOURCE_DISAGREEMENT|TIGHT|stale|ONE_SOURCE|STALE_ONLY|PARTIAL_SOURCE_DISAGREEMENT|TIGHT|stale|ONE_SOURCE|STALE_ONLY</td><td>CURRENT</td><td>NO</td><td>-1375.981666666667</td><td>-1375.981666666667</td><td>1375.981666666667</td><td>2026-06-28T17:02:59Z</td><td>9</td></tr></tbody></table></div>
+
       </section>
+
+
+
 
 
     <div class="section-title">
+
       <h2>Audit Notes</h2>
+
       <div class="section-note">Explicitly separates expected follow projections from canonical join failures.</div>
+
     </div>
+
+
 
       <section class="panel warning-panel">
+
         <div class="panel-head">
+
           <h2>Join Notes</h2>
+
           <div class="subtitle">Expected follow rows are retained even when they do not join to the current fish table.</div>
+
         </div>
+
         <table class="kv-table">
+
           <tbody>
+
             <tr><th>Current fish rows</th><td>4</td></tr>
+
 <tr><th>Closed fish rows</th><td>0</td></tr>
+
 <tr><th>Legacy AIR_FISH ledger rows</th><td>39</td></tr>
-<tr><th>Expected non-fish follow rows</th><td>804</td></tr>
+
+<tr><th>Expected non-fish follow rows</th><td>5608</td></tr>
+
 <tr><th>True canonical join warnings</th><td>0</td></tr>
+
           </tbody>
+
         </table>
+
         <div class="warning-list">
+
           <strong>Follow state counts</strong>
+
           <ul>
-            <li>FOLLOW_ACTIVE=4</li><li>FOLLOW_WEAKENING=804</li>
+
+            <li>FOLLOW_ACTIVE=4</li><li>FOLLOW_WEAKENING=5608</li>
+
           </ul>
+
         </div>
+
       </section>
 
+
+
   </main>
+
 </body>
+
 </html>
