@@ -1,0 +1,41 @@
+{
+  "asset_hashes": {
+    ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "assets/app.css": "7c7a32ab26951709ea2853113364a034fe8efe5ad778f9bf786d0cda84e743c0",
+    "assets/app.js": "2a9761cd1e1149c1fb3e1a48bd3f713f13fc0b04bf76fad638de0030ddfc0947",
+    "assets/charts.js": "138d5c6f5d18d8a5f4724fb1aaf7c9d49d0cc95ea04b0e02fdb12976e2d34d3f",
+    "assets/data.js": "3e0fdfb13aadf4eab936c46a8353a0ec53c2605ab9020d7222e1cd3360c78068"
+  },
+  "copied_page_hashes": {
+    "air/index.html": "2eef2956fb365ab2ea3a664a20c1bda95d499d67638f6a74050cde0420cc2462",
+    "water/index.html": "780f46b179c11f21956d4610fdd9da5b2a0986eec1561798490b758fd786bb7b"
+  },
+  "generated_at_utc": "2026-07-22T14:00:59Z",
+  "generation_id": "20260722T14-4de278364d46",
+  "hour_key": "20260722T14",
+  "page_hashes": {
+    "analytics": "78eb6c512ac65d465f8c1381c8605bb88867e7cd9ef8bde5a4d8fd867d2536a1",
+    "evidence": "d095f137c0c7eda56d5ea4e164708dc5aadbb9c401d056c646d89c7d60880189",
+    "health": "beef35281c5ea48a94a27a80af5f5b1daf5dd40673ded9913acb13633a2bfb06",
+    "overview": "4abdcbb71986d25a8dbdb05a56b8c9631150d21464b2114ec1b11f1460a5d271"
+  },
+  "schema_id": "FISH_ANALYTICS_SITE_GENERATION_MANIFEST_V0",
+  "source_hashes": {
+    "air_fish": "dcf2507d88800f2d259d6f2b64feee6576878b8ef1bcf65d1606b733f889c336",
+    "air_follow": "e81d9aa2feadf97b460ee64649807a1e29df3837fa577b3616ffecb0fb25e1d7",
+    "air_follow_history": "a2f618b64e589cbf0b5c6d754d90141ef44fedee9fde5b18798fff0fd0980ad0",
+    "air_match": "a1103ff41c52da623fd0d2aae2101e925971b641bc5935c8541e1da96195aef5",
+    "air_paper": "b1bccbc550a6368b742e9b0eed518cd4e28f1a0798046db66794bd8353e96fb1",
+    "air_search": "5626a12e83dda2c42c65bec6d9f18daf70558440bb114b936e78a848da78fda2",
+    "water_fish": "8d6cd5439e6174f1aef46d93613f5c8ba9031754f476b1f56b6389a52fbed81e",
+    "water_follow": "7c5c17805326d7ffc50bbb3aed5f3517bfec290d26a650d170fa2c581037d3de",
+    "water_lifecycle": "fa610d313a7538fac96ce872d26e728e8feb4aba1f4a42ac2f9ee982183c70aa",
+    "water_match": "0d9b7ab35d6d4d802699804adfe144e6f30204707e6ccdbcde0b0ac53fa5defa",
+    "water_movement": "81004b2ed5126952edb340bbc5f4ba9401f828ef5e1d6569ecc87be903348af2",
+    "water_paper": "dc1041cc743dbc2015d7732c0c0dc088d87110934d045f6c2a0dd1755f88672d",
+    "water_projection": "24a6af7a40a6c70860456d7e1ba096dd04249fb5b04649e8055d5263f84853da",
+    "water_report": "256a37c1bbfa4f09b040a66653f7026c806624fffcccaf89f0f52fba67e7c785",
+    "water_search": "93f97f98d512e546c1ad8558047caae01dabf059de6d53b3448bc35da2159474",
+    "water_search_shadow": "409ebe8850966acacc2483d16fa0592c8404308833c03e0aeca56ab228a59795"
+  }
+}
