@@ -1,0 +1,21 @@
+{
+  "page_id": "health",
+  "subtitle": "Availability and freshness of each public-safe source surface.",
+  "summary": {
+    "freshness_warnings": [
+      "water_match",
+      "water_fish",
+      "water_follow",
+      "water_projection",
+      "water_lifecycle",
+      "water_movement",
+      "water_paper",
+      "water_search",
+      "water_search_shadow",
+      "water_report"
+    ],
+    "generated_at_utc": "2026-07-22T19:00:43Z",
+    "source_count": 16
+  },
+  "title": "Health"
+}
