@@ -1,0 +1,123 @@
+{
+  "cards": [
+    {
+      "detail": "UTC hour key",
+      "label": "Report hour",
+      "tone": "gold",
+      "value": "20260723T06"
+    },
+    {
+      "detail": "site snapshot build",
+      "label": "Generation timestamp",
+      "tone": "teal",
+      "value": "2026-07-23T06:00:29Z"
+    },
+    {
+      "detail": "derived site state",
+      "label": "Overall status",
+      "tone": "green",
+      "value": "DEGRADED"
+    },
+    {
+      "detail": "current water surfaces",
+      "label": "Water status",
+      "tone": "blue",
+      "value": "PASS"
+    },
+    {
+      "detail": "current air surfaces",
+      "label": "Air status",
+      "tone": "blue",
+      "value": "PASS"
+    },
+    {
+      "detail": "water + air",
+      "label": "Total current fish",
+      "tone": "indigo",
+      "value": 8
+    },
+    {
+      "detail": "canonical water fish",
+      "label": "Water current fish",
+      "tone": "indigo",
+      "value": 4
+    },
+    {
+      "detail": "canonical air fish",
+      "label": "Air current fish",
+      "tone": "indigo",
+      "value": 4
+    },
+    {
+      "detail": "active follow rows",
+      "label": "Current active state count",
+      "tone": "green",
+      "value": 6
+    },
+    {
+      "detail": "waiting follow rows",
+      "label": "Current waiting state count",
+      "tone": "amber",
+      "value": 2
+    },
+    {
+      "detail": "legacy + AIR history",
+      "label": "Historical weakening count",
+      "tone": "red",
+      "value": 11580
+    },
+    {
+      "detail": "water + air paper",
+      "label": "Paper row count",
+      "tone": "teal",
+      "value": 14
+    },
+    {
+      "detail": "sources outside FRESH",
+      "label": "Freshness warnings",
+      "tone": "amber",
+      "value": 7
+    },
+    {
+      "detail": "publication status artifact",
+      "label": "Latest successful publication",
+      "tone": "gold",
+      "value": "PASS at 2026-07-23T05:00:49Z (pushed, 9b14c7e07bae821b639b73f2761eb7e51ca1ec27)"
+    }
+  ],
+  "freshness_warnings": [
+    "water_projection: STALE",
+    "water_lifecycle: STALE",
+    "water_movement: STALE",
+    "water_paper: STALE",
+    "water_search: STALE",
+    "water_search_shadow: STALE",
+    "water_report: FRESH"
+  ],
+  "page_id": "overview",
+  "subtitle": "Read-only WATER and AIR operator snapshot with bounded public-safe summaries.",
+  "summary": {
+    "air_current_fish": 4,
+    "air_status": "PASS",
+    "current_active_state_count": 6,
+    "current_waiting_state_count": 2,
+    "generated_at_utc": "2026-07-23T06:00:29Z",
+    "generation_id": "20260723T06-8b1f52287f79",
+    "historical_weakening_count": 11580,
+    "latest_successful_publication": {
+      "commit_sha": "9b14c7e07bae821b639b73f2761eb7e51ca1ec27",
+      "generated_at_utc": "2026-07-23T05:00:49Z",
+      "generation_id": "20260723T05-e674dbb99442",
+      "published_at_utc": "",
+      "pushed": true,
+      "status": "PASS"
+    },
+    "overall_status": "DEGRADED",
+    "paper_row_count": 14,
+    "report_hour": "20260723T06",
+    "total_current_fish": 8,
+    "water_current_fish": 4,
+    "water_status": "PASS"
+  },
+  "title": "Overview"
+}

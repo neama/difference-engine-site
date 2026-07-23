@@ -1,0 +1,37 @@
+{
+  "charts": {
+    "state_distribution": [
+      {
+        "label": "Water active",
+        "value": 2
+      },
+      {
+        "label": "Water waiting",
+        "value": 2
+      },
+      {
+        "label": "Air active",
+        "value": 4
+      },
+      {
+        "label": "AIR history weakening",
+        "value": 11576
+      }
+    ]
+  },
+  "page_id": "analytics",
+  "subtitle": "Current population, lineage, materialization, and freshness metrics without synthetic trend fabrication.",
+  "summary": {
+    "air_fish": 4,
+    "air_follow": 11360,
+    "air_follow_history": 23160,
+    "air_paper": 4,
+    "generated_at_utc": "2026-07-23T06:00:29Z",
+    "water_fish": 4,
+    "water_lifecycle": 10,
+    "water_movement": 10,
+    "water_paper": 10,
+    "water_projection": 10
+  },
+  "title": "Analytics"
+}
