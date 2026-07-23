@@ -1,0 +1,10 @@
+{
+  "page_id": "evidence",
+  "subtitle": "Sanitized generation JSON and bounded evidence summaries only.",
+  "summary": {
+    "generated_at_utc": "2026-07-23T00:00:43Z",
+    "generation_id": "20260723T00-e57086054dac",
+    "source_count": 16
+  },
+  "title": "Evidence"
+}
